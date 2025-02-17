@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta de Amor</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Contenedor del sobre */
+        .envelope-container {
+            position: relative;
+            width: 220px;
+            height: 150px;
+            cursor: pointer;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #b5651d;
+            border-radius: 5px;
+            border: 2px solid #8b4513;
+            z-index: 1;
+        }
+
+        .lid {
+            position: absolute;
+            width: 100%;
+            height: 60%;
+            background: #d2691e;
+            transition: transform 0.7s ease-in-out;
+            z-index: 3;
+        }
+
+        .lid.top {
+            top: 0;
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            transform-origin: top;
+        }
+
+        .letter {
+            position: absolute;
+            width: 90%;
+            height: 100px;
+            background: white;
+            top: 60%;
+            left: 5%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(50px);
+            transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+            opacity: 0;
+            z-index: 2;
+        }
+
+        /* Animación de "Te Amo" */
+        .falling-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            opacity: 0.8;
+            animation: fall 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        /* Contenedor de flores */
+        .flowers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .flower {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bloom 3s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        .petal {
+            position: absolute;
+            width: 12px;
+            height: 16px;
+            background: blue;
+            border-radius: 50%;
+            box-shadow: inset 2px -2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .center {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: yellow;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .petal:nth-child(1) { transform: rotate(45deg) translateY(-8px); }
+        .petal:nth-child(2) { transform: rotate(135deg) translateY(-8px); }
+        .petal:nth-child(3) { transform: rotate(225deg) translateY(-8px); }
+        .petal:nth-child(4) { transform: rotate(315deg) translateY(-8px); }
+
+        @keyframes bloom {
+            0% { transform: translateY(50px) scale(0.1); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-20px) scale(1.5); opacity: 1; }
+        }
+
+        /* Botones */
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: darkred;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 5px;
+            z-index: 2;
+        }
+
+        /* Mensaje final */
+        .final-message {
+            position: absolute;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="buttons">
+        <button id="openButton">Abrir Carta</button>
+        <button id="closeButton" style="display: none;">Cerrar Carta</button>
+    </div>
+
+    <div class="envelope-container" id="envelope">
+        <div class="lid top"></div>
+        <div class="envelope"></div>
+        <div class="letter" id="letter">
+            <p>Te amo mucho, mi masita ❤️</p>
+            <p>Espero que siempre estés en mi vida.</p>
+        </div>
+    </div>
+
+    <div class="flowers" id="flowers"></div>
+    <div class="final-message" id="finalMessage">Gracias por estar conmigo, te amo mucho ❤️</div>
+
+    <script>
+        const openButton = document.getElementById("openButton");
+        const closeButton = document.getElementById("closeButton");
+        const topLid = document.querySelector(".lid.top");
+        const letter = document.getElementById("letter");
+        const envelope = document.getElementById("envelope");
+        const flowers = document.getElementById("flowers");
+        const finalMessage = document.getElementById("finalMessage");
+
+        openButton.addEventListener("click", () => {
+            topLid.style.transform = "rotateX(-150deg)";
+            setTimeout(() => {
+                letter.style.transform = "translateY(-60px)";
+                letter.style.opacity = "1";
+                generateFlowers();
+                generateFallingText();
+            }, 700);
+            openButton.style.display = "none";
+            closeButton.style.display = "inline-block";
+        });
+
+        closeButton.addEventListener("click", () => {
+            letter.style.opacity = "0";
+            setTimeout(() => {
+                topLid.style.transform = "rotateX(0deg)";
+                envelope.style.opacity = "0";
+                finalMessage.style.opacity = "1";
+            }, 700);
+            closeButton.style.display = "none";
+        });
+
+        function generateFlowers() {
+            flowers.innerHTML = "";
+            for (let i = 0; i < 20; i++) {
+                let flower = document.createElement("div");
+                flower.classList.add("flower");
+                flower.innerHTML = '<div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="center"></div>';
+                flower.style.left = Math.random() * 100 + "vw"; 
+                flowers.appendChild(flower);
+            }
+        }
+
+        function generateFallingText() {
+            setInterval(() => {
+                let text = document.createElement("div");
+                text.classList.add("falling-text");
+                text.innerText = "Te Amo ❤️";
+                text.style.left = Math.random() * 100 + "vw";
+                document.body.appendChild(text);
+                setTimeout(() => { text.remove(); }, 5000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
